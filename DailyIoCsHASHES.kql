@@ -1,0 +1,25 @@
+// Daily IoC's - Hashes
+
+
+//MD5 hashes
+let MalwareBazaarMISP = externaldata(MD5: string)
+["https://bazaar.abuse.ch/export/txt/md5/recent"] with (format="txt", ignoreFirstRecord=True);
+let MaliciousMD5 = materialize (
+          MalwareBazaarMISP
+          | where MD5 !contains "#"
+          | distinct MD5
+          );
+DeviceFileEvents
+| where MD5 has_any (MaliciousMD5)
+
+
+//or SHA256 hashes
+let MalwareBazaarMISP = externaldata(SHA256: string)
+["https://bazaar.abuse.ch/export/txt/sha256/recent/"] with (format="txt", ignoreFirstRecord=True);
+let MaliciousSHA256 = materialize (
+          MalwareBazaarMISP
+          | where SHA256 !contains "#"
+          | distinct SHA256
+          );
+DeviceFileEvents
+| where SHA256 has_any (MaliciousSHA256)
