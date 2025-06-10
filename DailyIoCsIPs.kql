@@ -1,0 +1,12 @@
+// Daily IoC's - IPs
+
+
+let ThreatViewIPblocklist = externaldata(ip: string)
+["https://threatview.io/Downloads/IP-High-Confidence-Feed.txt"] with (format="txt", ignoreFirstRecord=True);
+let IPblocklist = materialize (
+      ThreatViewIPblocklist | where isnotempty(ip)
+      | serialize  
+      | distinct ip);
+DeviceNetworkEvents
+| where RemoteIP  has_any (IPblocklist)
+//| where LocalIP has_any (IPblocklist)
