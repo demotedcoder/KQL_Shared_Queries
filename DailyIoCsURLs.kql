@@ -1,0 +1,12 @@
+// Daily IoC's - URLs
+
+
+let URLhaus = externaldata(url: string)
+["https://urlhaus.abuse.ch/downloads/text_online/"] with (format="txt", ignoreFirstRecord=True)
+| limit 5000 // in order to not exceed the allowed limit
+;
+let MaliciousURLs = materialize (
+URLhaus | where url !contains "#" and  isnotempty(url) | serialize  | distinct url); 
+// URLhaus | distinct url; // show the BlockList of URLs
+DeviceNetworkEvents
+| where RemoteUrl  has_any (MaliciousURLs)
