@@ -1,0 +1,10 @@
+// Internet Facing Endpoint - Vulnerabilities
+
+
+
+
+let internetFacingDevice =
+DeviceInfo  | where IsInternetFacing and isnotempty( PublicIP) | distinct DeviceId;
+DeviceTvmSoftwareVulnerabilities
+| where DeviceId has_any (internetFacingDevice) 
+|  project DeviceName, CveId, SoftwareName, VulnerabilitySeverityLevel | sort by VulnerabilitySeverityLevel asc 
