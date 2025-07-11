@@ -1,0 +1,8 @@
+// SCID's - reference sheet
+
+DeviceTvmSecureConfigurationAssessment
+| join kind=leftouter (
+DeviceTvmSecureConfigurationAssessmentKB
+| project ConfigurationId, ConfigurationName, ConfigurationDescription, RiskDescription, ConfigurationImpact
+) on ConfigurationId
+| distinct ConfigurationId, ConfigurationName, ConfigurationCategory, ConfigurationSubcategory, ConfigurationDescription, RiskDescription, ConfigurationImpact
