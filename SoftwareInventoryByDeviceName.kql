@@ -2,7 +2,7 @@
 
 
 DeviceInfo
-| where MachineGroup == " Clients" | distinct DeviceName, MachineGroup
+| where MachineGroup == "Clients" | distinct DeviceName, MachineGroup
 | join kind=inner DeviceTvmSoftwareInventory on DeviceName
 | extend Software = strcat(SoftwareName, " - ", SoftwareVendor)
 //| summarize Hostnames = make_list(pack("Hostname", DeviceName, "SoftwareVendor", SoftwareVendor)) by SoftwareName
