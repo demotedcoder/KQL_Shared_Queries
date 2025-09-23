@@ -1,0 +1,6 @@
+// this query will find the optimal timestamp to get all possible active and onboarded assets without innacuracy
+// if it contains inactive and active in the set, it means that the device is inactive so decrease the number of days ago ( or vice versa )
+DeviceInfo
+| where Timestamp > ago(10d)
+| where MachineGroup == "Linux Servers" and OnboardingStatus == "Onboarded" 
+| summarize make_set(SensorHealthState) by  DeviceName
