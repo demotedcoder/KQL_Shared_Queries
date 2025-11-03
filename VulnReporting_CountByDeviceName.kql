@@ -1,0 +1,13 @@
+// Query that helps to see for each endpoint/server how many vulns they have
+// with the last commented line you can find the total number 
+
+
+
+DeviceInfo
+| where Timestamp > ago(7d)
+| where MachineGroup == "Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceName
+| join DeviceTvmSoftwareVulnerabilities on $left.DeviceName ==  $right.DeviceName
+| where VulnerabilitySeverityLevel in ("Critical", "High", "Medium", "Low")
+| summarize total = dcount(CveId) by DeviceName
+//| summarize TotalNumberOfVuln = sum(total)
