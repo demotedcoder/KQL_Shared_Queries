@@ -1,0 +1,15 @@
+// This query retrieves a complete list of devices, each with an array of associated CVEs.
+// You can uncomment the last two lines to avoid deduplicating CVE IDs and obtain the total number of vulnerabilities.
+
+
+
+
+DeviceInfo
+| where Timestamp > ago(1d)
+| where MachineGroup == "Windows Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceName
+| join DeviceTvmSoftwareVulnerabilities on $left.DeviceName ==  $right.DeviceName
+| where VulnerabilitySeverityLevel in ("Critical", "High", "Medium") 
+| summarize cveList = make_set(CveId),total = dcount(CveId) by DeviceName, OSPlatform
+//| summarize  cveList = make_set(CveId),total = count() by DeviceName, OSPlatform
+//| summarize TotalNumberOfVuln = sum(total)
