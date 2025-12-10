@@ -1,0 +1,10 @@
+////Count Vulns for each device by severity and make a list with CVEs 
+DeviceInfo
+| where Timestamp > ago(15d)
+| where MachineGroup == "Windows Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceId
+| join DeviceTvmSoftwareVulnerabilities on $left.DeviceId ==  $right.DeviceId
+| join kind=inner DeviceTvmSoftwareVulnerabilitiesKB on $left.CveId == $right.CveId
+| distinct CveId, DeviceName, VulnerabilitySeverityLevel
+| where VulnerabilitySeverityLevel in ("Critical", "High", "Medium", "Low")
+| summarize Count = count(), CVE_List = make_list(CveId) by DeviceName,VulnerabilitySeverityLevel | sort by DeviceName asc 
