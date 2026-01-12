@@ -1,0 +1,9 @@
+// list all disk paths for each software installed
+
+
+let Endpoints = 
+DeviceInfo | where MachineGroup == "Clients" | distinct DeviceId, DeviceName;
+DeviceTvmSoftwareEvidenceBeta
+| where DeviceId has_any (Endpoints) | summarize DiskPaths = make_set(DiskPaths) by SoftwareName
+
+//Software Evidence
