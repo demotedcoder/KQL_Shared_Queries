@@ -1,0 +1,8 @@
+//Query that shows distinct CVEIDs for a specific Machine Group
+
+DeviceInfo
+| where Timestamp > ago(7d)
+| where MachineGroup == "Linux Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceName
+| join DeviceTvmSoftwareVulnerabilities on $left.DeviceName ==  $right.DeviceName
+| distinct CveId
