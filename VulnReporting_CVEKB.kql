@@ -1,0 +1,14 @@
+//You can use this query to retrieve VulnerabilitySeverityLevel, VulnerabilityDescription, SoftwareName, SoftwareVendor
+//of each CVE affecting devices grouped by MachineGroup
+
+DeviceInfo
+| where Timestamp > ago(10d)
+| where MachineGroup == "Windows Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceName
+| join kind=inner (DeviceTvmSoftwareVulnerabilities) on $left.DeviceName == $right.DeviceName
+| where VulnerabilitySeverityLevel in ("Critical", "High", "Medium", "Low")
+| join kind=inner (DeviceTvmSoftwareVulnerabilitiesKB) on CveId
+| extend CVEdetails = strcat(CveId, " | ", VulnerabilitySeverityLevel, " | ", VulnerabilityDescription, " | ", SoftwareName , " / ", SoftwareVendor)
+| summarize CVEKB = make_set(CVEdetails) by DeviceName
+| mv-expand CVEKB
+| project DeviceName, CVEKB
