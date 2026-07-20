@@ -1,0 +1,12 @@
+// With this query, you can find, for each CVE existing in your organization, a list of affected devices grouped by machine group (e.g., Windows Servers).
+// Vulnerability report by CVE ID
+
+
+
+DeviceInfo
+| where Timestamp > ago(31d)
+| where MachineGroup == "Windows Servers" and SensorHealthState == "Active" and OnboardingStatus == "Onboarded"
+| distinct DeviceName
+| join DeviceTvmSoftwareVulnerabilities on $left.DeviceName ==  $right.DeviceName
+| where VulnerabilitySeverityLevel in ("Critical", "High", "Medium", "Low") 
+| summarize affectedDeviceList = make_set(DeviceName),NumberOfAffectedDevices = count() by CveId
